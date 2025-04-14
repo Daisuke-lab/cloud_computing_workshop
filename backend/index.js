@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
@@ -68,5 +69,5 @@ app.get('/students', async (req, res) => {
 });
 
 
-const port = 5005;
+const port = process.env.PORT || 5005;
 app.listen(port, () => console.log(`Listening on ${port}`));
