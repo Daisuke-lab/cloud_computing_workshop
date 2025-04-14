@@ -2,62 +2,30 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+const mysql = require('mysql');
+const bodyParser = require('body-parser');
+
+// MySQL Connection
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: 'test_db'
+});
+// Connect to MySQL
+db.connect((err) => {
+  if (err) {
+    console.error('Error connecting to MySQL: ' + err.stack);
+    return;
+  }
+  console.log('Connected to MySQL as ID ' + db.threadId);
+});
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const students = [
-  {
-    name: "Alice",
-    email: "alice@miu.edu",
-    id: "S100"
-  },
-  {
-    name: "Bob",
-    email: "bob@miu.edu",
-    id: "S101"
-  },
-  {
-    name: "Carol",
-    email: "carol@miu.edu",
-    id: "S102"
-  },
-  {
-    name: "David",
-    email: "david@miu.edu",
-    id: "S103"
-  },
-  {
-    name: "Eve",
-    email: "eve@miu.edu",
-    id: "S104"
-  },
-  {
-    name: "Frank",
-    email: "frank@miu.edu",
-    id: "S105"
-  },
-  {
-    name: "Grace",
-    email: "grace@miu.edu",
-    id: "S106"
-  },
-  {
-    name: "Hank",
-    email: "hank@miu.edu",
-    id: "S107"
-  },
-  {
-    name: "Ivy",
-    email: "ivy@miu.edu",
-    id: "S108"
-  },
-  {
-    name: "Jack",
-    email: "jack@miu.edu",
-    id: "S109"
-  }
-];
+const students = 
 
 
 app.get('/health', async (req, res) => {
@@ -65,7 +33,15 @@ app.get('/health', async (req, res) => {
 });
 
 app.get('/students', async (req, res) => {
-  res.send(students);
+  db.query('SELECT * FROM students', (err, results) => {
+    if (err) {
+      console.error('Error executing query: ' + err.stack);
+      res.status(500).send('Error fetching users');
+      return;
+    }
+    res.json(results);
+  });
+  //res.send(students);
 });
 
 
